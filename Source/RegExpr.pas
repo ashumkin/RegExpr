@@ -1127,6 +1127,31 @@ class function TRegExpr.VersionMinor : integer; //###0.944
  end; { of class function TRegExpr.VersionMinor
 --------------------------------------------------------------}
 
+const
+{$IFDEF UniCode}
+ RusRangeLo : array [0 .. 33] of REChar =
+  (#$430,#$431,#$432,#$433,#$434,#$435,#$451,#$436,#$437,
+   #$438,#$439,#$43A,#$43B,#$43C,#$43D,#$43E,#$43F,
+   #$440,#$441,#$442,#$443,#$444,#$445,#$446,#$447,
+   #$448,#$449,#$44A,#$44B,#$44C,#$44D,#$44E,#$44F,#0);
+ RusRangeHi : array [0 .. 33] of REChar =
+  (#$410,#$411,#$412,#$413,#$414,#$415,#$401,#$416,#$417,
+   #$418,#$419,#$41A,#$41B,#$41C,#$41D,#$41E,#$41F,
+   #$420,#$421,#$422,#$423,#$424,#$425,#$426,#$427,
+   #$428,#$429,#$42A,#$42B,#$42C,#$42D,#$42E,#$42F,#0);
+ RusRangeLoLow = #$430{'à'};
+ RusRangeLoHigh = #$44F{'ÿ'};
+ RusRangeHiLow = #$410{'À'};
+ RusRangeHiHigh = #$42F{'ß'};
+{$ELSE}
+ RusRangeLo = 'àáâãäå¸æçèéêëìíîïğñòóôõö÷øùúûüışÿ';
+ RusRangeHi = 'ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞß';
+ RusRangeLoLow = 'à';
+ RusRangeLoHigh = 'ÿ';
+ RusRangeHiLow = 'À';
+ RusRangeHiHigh = 'ß';
+{$ENDIF}
+
 constructor TRegExpr.Create;
  begin
   inherited;
@@ -1145,6 +1170,8 @@ constructor TRegExpr.Create;
 
   SpaceChars := RegExprSpaceChars; //###0.927
   WordChars := RegExprWordChars; //###0.929
+  if ModifierR then
+    WordChars := WordChars + RusRangeLo + RusRangeHi;
   fInvertCase := RegExprInvertCaseFunction; //###0.927
 
   fLineSeparators := RegExprLineSeparators; //###0.941
@@ -1549,30 +1576,6 @@ const
  META : array [0 .. 12] of REChar = (
   '^', '$', '.', '[', '(', ')', '|', '?', '+', '*', EscChar, '{', #0);
  // Any modification must be synchronized with QuoteRegExprMetaChars !!!
-
-{$IFDEF UniCode}
- RusRangeLo : array [0 .. 33] of REChar =
-  (#$430,#$431,#$432,#$433,#$434,#$435,#$451,#$436,#$437,
-   #$438,#$439,#$43A,#$43B,#$43C,#$43D,#$43E,#$43F,
-   #$440,#$441,#$442,#$443,#$444,#$445,#$446,#$447,
-   #$448,#$449,#$44A,#$44B,#$44C,#$44D,#$44E,#$44F,#0);
- RusRangeHi : array [0 .. 33] of REChar =
-  (#$410,#$411,#$412,#$413,#$414,#$415,#$401,#$416,#$417,
-   #$418,#$419,#$41A,#$41B,#$41C,#$41D,#$41E,#$41F,
-   #$420,#$421,#$422,#$423,#$424,#$425,#$426,#$427,
-   #$428,#$429,#$42A,#$42B,#$42C,#$42D,#$42E,#$42F,#0);
- RusRangeLoLow = #$430{'à'};
- RusRangeLoHigh = #$44F{'ÿ'};
- RusRangeHiLow = #$410{'À'};
- RusRangeHiHigh = #$42F{'ß'};
-{$ELSE}
- RusRangeLo = 'àáâãäå¸æçèéêëìíîïğñòóôõö÷øùúûüışÿ';
- RusRangeHi = 'ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚÛÜİŞß';
- RusRangeLoLow = 'à';
- RusRangeLoHigh = 'ÿ';
- RusRangeHiLow = 'À';
- RusRangeHiHigh = 'ß';
-{$ENDIF}
 
 function TRegExpr.CompileRegExpr (exp : PRegExprChar) : boolean;
 // compile a regular expression into internal code
